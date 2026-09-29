@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io"
+	"fmt"
 	"log"
 	"net"
 )
@@ -10,6 +10,7 @@ func main() {
 	MyListenner()
 }
 
+// un server TCP ne peux acceder qu'a des bytes,
 func MyListenner() {
 	// 1.1
 	// creer un listenner, en gros simplement un truc qui va ecouter sur le port 8080 ce qu il se passe
@@ -31,12 +32,22 @@ func MyListenner() {
 		// 1.4
 		// handle ce qui se passe pendant la connection
 		go handleConnection(conn)
+
+		// print que le serv a bien recu un message et l'affichier
 	}
 }
 
+// fonction qui permet de prendre le conn, créer un buffer pour le message et va read le buffer
+// puis convertit le buffer en string
+// enfin print le message
 func handleConnection(conn net.Conn) {
-	io.Copy(conn, conn)
-	conn.Close()
-	// faire des trucs !
+	buffer := make([]byte, 1024)
+	n, err := conn.Read(buffer)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	message := string(buffer[:n])
+	fmt.Println(message)
 
 }
